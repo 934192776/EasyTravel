@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private LinearLayout categoryCity, categoryAdventure, categoryFood, categoryNature;
     private EditText etSearch;
+    private Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
         categoryFood = findViewById(R.id.categoryFood);
         categoryNature = findViewById(R.id.categoryNature);
         etSearch = findViewById(R.id.etSearch);
+        btnLogin = findViewById(R.id.btnLogin);  // ← 新增
 
         // ========== 设置 RecyclerView ==========
         recyclerViewFeatured.setLayoutManager(new LinearLayoutManager(this));
@@ -46,6 +49,15 @@ public class HomeActivity extends AppCompatActivity {
 
         // ========== 加载所有数据 ==========
         loadAllDeals();
+
+        // ========== Login 按钮点击 ==========
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // ========== 搜索功能：按回车键搜索 ==========
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -111,28 +123,22 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        // 根据关键词跳转到对应分类页面
         String lowerQuery = query.toLowerCase();
         Intent intent = null;
 
         if (lowerQuery.contains("skydive") || lowerQuery.contains("sky")) {
-            // 跳转到 Adventure 页面
             intent = new Intent(HomeActivity.this, AdventureSearchActivity.class);
             intent.putExtra("search_keyword", query);
         } else if (lowerQuery.contains("noodle") || lowerQuery.contains("food") || lowerQuery.contains("eat")) {
-            // 跳转到 Food 页面
             intent = new Intent(HomeActivity.this, FoodSearchActivity.class);
             intent.putExtra("search_keyword", query);
         } else if (lowerQuery.contains("city") || lowerQuery.contains("tour") || lowerQuery.contains("walk")) {
-            // 跳转到 City 页面
             intent = new Intent(HomeActivity.this, CitySearchActivity.class);
             intent.putExtra("search_keyword", query);
         } else if (lowerQuery.contains("nature") || lowerQuery.contains("wild") || lowerQuery.contains("hike")) {
-            // 跳转到 Nature 页面
             intent = new Intent(HomeActivity.this, NatureSearchActivity.class);
             intent.putExtra("search_keyword", query);
         } else {
-            // 默认跳转到搜索页面（或者显示提示）
             Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
             return;
         }

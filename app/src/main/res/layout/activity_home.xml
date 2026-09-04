@@ -9,17 +9,37 @@
     android:background="#F5F5F5"
     tools:context=".HomeActivity">
 
-    <!-- ====== 顶部标题 ====== -->
-    <TextView
+    <!-- ====== 顶部：标题 + 登录按钮（同一行） ====== -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="✈️ EasyTravel"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#1A237E"
-        android:layout_marginBottom="4dp" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="4dp">
 
-    <!-- ====== 搜索框（改为 EditText） ====== -->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="✈️ EasyTravel"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1A237E" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:backgroundTint="#1A237E"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:minHeight="32dp" />
+
+    </LinearLayout>
+
+    <!-- ====== 搜索框 ====== -->
     <EditText
         android:id="@+id/etSearch"
         android:layout_width="match_parent"
@@ -29,8 +49,7 @@
         android:background="#FFFFFF"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp"
-        android:textSize="14sp"
-        android:drawablePadding="8dp" />
+        android:textSize="14sp" />
 
     <!-- ====== 4个分类并排在一行 ====== -->
     <LinearLayout
@@ -39,7 +58,6 @@
         android:orientation="horizontal"
         android:layout_marginBottom="12dp">
 
-        <!-- City -->
         <LinearLayout
             android:id="@+id/categoryCity"
             android:layout_width="0dp"
@@ -67,7 +85,6 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Adventure -->
         <LinearLayout
             android:id="@+id/categoryAdventure"
             android:layout_width="0dp"
@@ -96,7 +113,6 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Food -->
         <LinearLayout
             android:id="@+id/categoryFood"
             android:layout_width="0dp"
@@ -125,7 +141,6 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Nature -->
         <LinearLayout
             android:id="@+id/categoryNature"
             android:layout_width="0dp"

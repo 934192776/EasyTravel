@@ -1,37 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="12dp"
     android:background="#F5F5F5">
 
+    <!-- ====== 顶部：返回箭头 + 搜索框（同一行） ====== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="12dp">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← Back"
-            android:backgroundTint="#782784"
-            android:textColor="#FFFFFE" />
-
+        <!-- 返回箭头（用 emoji） -->
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="28sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 搜索框 -->
+        <EditText
+            android:id="@+id/etSearchCity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🏙️ City Tours"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#1A237E"
-            android:gravity="center" />
+            android:hint="🔍 Search city tours..."
+            android:padding="10dp"
+            android:background="#FFFFFF"
+            android:textSize="14sp" />
+
     </LinearLayout>
 
+    <!-- ====== RecyclerView ====== -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCity"
         android:layout_width="match_parent"

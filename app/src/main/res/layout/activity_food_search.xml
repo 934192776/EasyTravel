@@ -5,73 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="12dp"
     android:background="#F5F5F5">
 
-    <!-- ====== 顶部：返回按钮 + 标题 ====== -->
+    <!-- ====== 顶部：返回箭头 + 搜索框（同一行） ====== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="12dp">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← Back"
-            android:backgroundTint="#782784"
-            android:textColor="#FFFFFE" />
-
+        <!-- 返回箭头（用 emoji） -->
         <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="←"
+            android:textSize="28sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 搜索框 -->
+        <EditText
+            android:id="@+id/etSearchFood"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🍔 Auckland Food Favorites"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#1A237E"
-            android:gravity="center" />
+            android:hint="🔍 Search food..."
+            android:padding="10dp"
+            android:background="#FFFFFF"
+            android:textSize="14sp" />
 
     </LinearLayout>
-
-    <!-- ====== 搜索框 ====== -->
-    <LinearLayout
-        android:id="@+id/searchBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:padding="14dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="20dp"
-        android:clickable="true"
-        android:focusable="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔍"
-            android:textSize="20sp"
-            android:layout_marginEnd="12dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Find your food..."
-            android:textSize="16sp"
-            android:textColor="#999999" />
-    </LinearLayout>
-
-    <!-- ====== 标题：本地美食推荐 ====== -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=" Auckland Food Favorites"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="12dp" />
 
     <!-- ====== RecyclerView ====== -->
     <androidx.recyclerview.widget.RecyclerView

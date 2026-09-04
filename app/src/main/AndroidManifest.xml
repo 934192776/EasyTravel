@@ -7,6 +7,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyTravel">
@@ -29,24 +30,28 @@
         <activity android:name=".LoginActivity" android:exported="false" />
         <activity android:name=".RegisterActivity" android:exported="false" />
 
-        <!-- ===== 搜索页面 ===== -->
-        <activity android:name=".SearchActivity" android:exported="false" />
-
         <!-- ===== 分类详情页 ===== -->
-        <activity android:name=".FoodSearchActivity" android:exported="false" />
         <activity android:name=".CitySearchActivity" android:exported="false" />
         <activity android:name=".AdventureSearchActivity" android:exported="false" />
+        <activity android:name=".FoodSearchActivity" android:exported="false" />
         <activity android:name=".NatureSearchActivity" android:exported="false" />
 
         <!-- ===== Deal 详情页 ===== -->
         <activity android:name=".DealDetailActivity" android:exported="false" />
 
-        <!-- ===== 预订页面 ===== -->
-        <activity android:name=".BookingActivity" android:exported="false" />
+        <!-- ===== Customer 页面 ===== -->
         <activity android:name=".MyBookingsActivity" android:exported="false" />
-
-        <!-- ===== 个人资料 ===== -->
         <activity android:name=".ProfileActivity" android:exported="false" />
+
+        <!-- ===== Supplier 页面 ===== -->
+        <activity android:name=".AddDealActivity" android:exported="false" />
+        <activity android:name=".SupplierDealsActivity" android:exported="false" />
+        <activity android:name=".SupplierEarningsActivity" android:exported="false" />
+
+        <!-- ===== Admin 页面 ===== -->
+        <activity android:name=".ManageUsersActivity" android:exported="false" />
+        <activity android:name=".ApproveDealsActivity" android:exported="false" />
+        <activity android:name=".AdminReportsActivity" android:exported="false" />
 
         <!-- ===== Dashboard ===== -->
         <activity android:name=".CustomerDashboardActivity" android:exported="false" />

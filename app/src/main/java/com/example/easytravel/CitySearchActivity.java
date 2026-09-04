@@ -1,8 +1,11 @@
 package com.example.easytravel;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +20,9 @@ public class CitySearchActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DealAdapter dealAdapter;
     private List<Deal> cityDeals = new ArrayList<>();
-    private Button btnBack;
+    private List<Deal> filteredDeals = new ArrayList<>();
+    private TextView btnBack;
+    private EditText etSearchCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,37 +31,57 @@ public class CitySearchActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerViewCity);
         btnBack = findViewById(R.id.btnBack);
+        etSearchCity = findViewById(R.id.etSearchCity);
 
-        TextView tvTitle = findViewById(R.id.tvTitle);
-        if (tvTitle != null) {
-            tvTitle.setText("🏙️ Auckland City Tours");
-        }
-
-        if (recyclerView != null) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            dealAdapter = new DealAdapter();
-            recyclerView.setAdapter(dealAdapter);
-        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        dealAdapter = new DealAdapter();
+        recyclerView.setAdapter(dealAdapter);
 
         loadCityDeals();
 
-        if (btnBack != null) {
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
-        }
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-        if (dealAdapter != null) {
-            dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(Deal deal) {
-                    // 跳转到详情页
+        etSearchCity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterDeals(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Deal deal) {
+                Intent intent = new Intent(CitySearchActivity.this, DealDetailActivity.class);
+                intent.putExtra("deal_data", deal);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void filterDeals(String query) {
+        filteredDeals.clear();
+        if (query.isEmpty()) {
+            filteredDeals.addAll(cityDeals);
+        } else {
+            for (Deal deal : cityDeals) {
+                if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                        deal.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                    filteredDeals.add(deal);
                 }
-            });
+            }
         }
+        dealAdapter.setDeals(filteredDeals);
     }
 
     private void loadCityDeals() {
@@ -65,8 +90,7 @@ public class CitySearchActivity extends AppCompatActivity {
         cityDeals.add(new Deal("3", "Auckland Harbour Bridge Climb", "Climb the iconic Auckland Harbour Bridge.", "City", "159.00", "", "Adventure NZ", "Auckland Harbour", true, "Activity"));
         cityDeals.add(new Deal("4", "Auckland War Memorial Museum", "Explore New Zealand's history at the Auckland Museum.", "City", "25.00", "", "Auckland Museum", "Auckland Domain", true, "Tour"));
 
-        if (dealAdapter != null) {
-            dealAdapter.setDeals(cityDeals);
-        }
+        filteredDeals.addAll(cityDeals);
+        dealAdapter.setDeals(filteredDeals);
     }
 }
