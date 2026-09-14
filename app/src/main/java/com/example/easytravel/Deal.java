@@ -1,39 +1,40 @@
-package com.example.easytravel.model;
+package com.example.easytravel;
 
-import java.io.Serializable;
-
-public class Deal implements Serializable {
+public class Deal {
     private String id;
     private String title;
     private String description;
-    private String category;
-    private String price;
+    private String category;      // "City", "Adventure", "Food", "Nature"
+    private String subCategory;   // "Seafood", "Classic Kiwi", "Asian Fusion", "Dessert & Cafe"
+    private double price;
     private String imageUrl;
-    private String supplier;
+    private String supplierId;
+    private String supplierName;
     private String location;
-    private boolean available;
-    private String type;
+    private double rating;
+    private boolean isApproved;
 
-    // ===== 无参构造方法（Firebase 需要） =====
-    public Deal() {}
+    public Deal() {
+    }
 
-    // ===== 完整构造方法 =====
     public Deal(String id, String title, String description, String category,
-                String price, String imageUrl, String supplier, String location,
-                boolean available, String type) {
+                String subCategory, double price, String imageUrl,
+                String supplierId, String supplierName, String location,
+                double rating, boolean isApproved) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.category = category;
+        this.subCategory = subCategory;
         this.price = price;
         this.imageUrl = imageUrl;
-        this.supplier = supplier;
+        this.supplierId = supplierId;
+        this.supplierName = supplierName;
         this.location = location;
-        this.available = available;
-        this.type = type;
+        this.rating = rating;
+        this.isApproved = isApproved;
     }
 
-    // ===== Getter 和 Setter =====
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -46,21 +47,27 @@ public class Deal implements Serializable {
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public String getPrice() { return price; }
-    public void setPrice(String price) { this.price = price; }
+    public String getSubCategory() { return subCategory; }
+    public void setSubCategory(String subCategory) { this.subCategory = subCategory; }
+
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-    public String getSupplier() { return supplier; }
-    public void setSupplier(String supplier) { this.supplier = supplier; }
+    public String getSupplierId() { return supplierId; }
+    public void setSupplierId(String supplierId) { this.supplierId = supplierId; }
+
+    public String getSupplierName() { return supplierName; }
+    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
-    public boolean isAvailable() { return available; }
-    public void setAvailable(boolean available) { this.available = available; }
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public boolean isApproved() { return isApproved; }
+    public void setApproved(boolean approved) { isApproved = approved; }
 }

@@ -2,59 +2,39 @@ package com.example.easytravel;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
     private Button btnLogin, btnGoRegister;
-    private RadioGroup rgRole;
-    private RadioButton rbCustomer, rbSupplier, rbAdmin;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // ========== 找到控件 ==========
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnGoRegister = findViewById(R.id.btnGoRegister);
-        rgRole = findViewById(R.id.rgRole);
-        rbCustomer = findViewById(R.id.rbCustomer);
-        rbSupplier = findViewById(R.id.rbSupplier);
-        rbAdmin = findViewById(R.id.rbAdmin);
 
-        // ========== 自动匹配角色：输入邮箱时自动选中对应的角色 ==========
-        etEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String email = s.toString().toLowerCase();
-                if (email.contains("admin")) {
-                    rbAdmin.setChecked(true);
-                } else if (email.contains("supplier")) {
-                    rbSupplier.setChecked(true);
-                } else if (email.contains("customer")) {
-                    rbCustomer.setChecked(true);
-                }
-                // 如果都不包含，保持当前选中的不变
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+        mAuth = FirebaseAuth.getInstance();
 
         // ========== 登录按钮 ==========
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -68,29 +48,19 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                // 获取选择的角色
-                int selectedId = rgRole.getCheckedRadioButtonId();
-                String role = "Customer";
-                if (selectedId == rbSupplier.getId()) {
-                    role = "Supplier";
-                } else if (selectedId == rbAdmin.getId()) {
-                    role = "Admin";
-                }
-
-                // 根据角色跳转到对应的 Dashboard
-                Intent intent;
-                if (role.equals("Admin")) {
-                    intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
-                } else if (role.equals("Supplier")) {
-                    intent = new Intent(LoginActivity.this, SupplierDashboardActivity.class);
-                } else {
-                    intent = new Intent(LoginActivity.this, CustomerDashboardActivity.class);
-                }
-
-                intent.putExtra("user_email", email);
-                intent.putExtra("user_role", role);
-                startActivity(intent);
-                finish();
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    checkUserRole(user.getUid());
+                                }
+                            } else {
+                                Toast.makeText(LoginActivity.this,
+                                        "Login failed: " + task.getException().getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
             }
         });
 
@@ -99,6 +69,38 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            }
+        });
+    }
+
+    // ========== 从数据库读取用户角色 ==========
+    private void checkUserRole(String uid) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String role = snapshot.child("role").getValue(String.class);
+                if (role == null) role = "Customer";
+
+                Intent intent;
+                switch (role) {
+                    case "Supplier":
+                        intent = new Intent(LoginActivity.this, SupplierDashboardActivity.class);
+                        break;
+                    case "Admin":
+                        intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                        break;
+                    default:
+                        intent = new Intent(LoginActivity.this, CustomerDashboardActivity.class);
+                        break;
+                }
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(LoginActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -14,15 +14,8 @@
         android:textSize="36sp"
         android:textStyle="bold"
         android:textColor="#1A237E"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="48dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login to your account"
-        android:textSize="16sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="32dp" />
 
     <EditText
         android:id="@+id/etEmail"

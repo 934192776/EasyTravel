@@ -1,66 +1,81 @@
 package com.example.easytravel;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.easytravel.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etName, etEmail, etPassword;
-    private Button btnRegister, btnBackToLogin;
-    private RadioGroup rgRole;
-    private RadioButton rbCustomer, rbSupplier, rbAdmin;
+    private EditText etFullName, etEmail, etPassword;
+    private Button btnRegister;
+    private FirebaseAuth mAuth;
+    private DatabaseReference userRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        etName = findViewById(R.id.etName);
+        etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnRegister = findViewById(R.id.btnRegister);
-        btnBackToLogin = findViewById(R.id.btnBackToLogin);
-        rgRole = findViewById(R.id.rgRole);
-        rbCustomer = findViewById(R.id.rbCustomer);
-        rbSupplier = findViewById(R.id.rbSupplier);
-        rbAdmin = findViewById(R.id.rbAdmin);
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = etName.getText().toString().trim();
-                String email = etEmail.getText().toString().trim();
-                String password = etPassword.getText().toString().trim();
+        mAuth = FirebaseAuth.getInstance();
+        userRef = FirebaseDatabase.getInstance().getReference("users");
 
-                if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(RegisterActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        btnRegister.setOnClickListener(v -> {
+            String fullName = etFullName.getText().toString().trim();
+            String email = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
 
-                int selectedId = rgRole.getCheckedRadioButtonId();
-                String role = "Customer";
-                if (selectedId == rbSupplier.getId()) {
-                    role = "Supplier";
-                } else if (selectedId == rbAdmin.getId()) {
-                    role = "Admin";
-                }
-
-                Toast.makeText(RegisterActivity.this, "Registered as " + role + "! Please login.", Toast.LENGTH_LONG).show();
-                finish();
+            // 输入验证
+            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
 
-        btnBackToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+            if (password.length() < 6) {
+                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            // 创建 Firebase Auth 用户
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            if (firebaseUser != null) {
+                                String uid = firebaseUser.getUid();
+
+                                // ✅ 所有公开注册的用户都是 Customer
+                                User user = new User(uid, fullName, email, "Customer");
+
+                                userRef.child(uid).setValue(user)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(this, "Database error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                        } else {
+                            Toast.makeText(this, "Registration failed: " +
+                                    task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
     }
 }

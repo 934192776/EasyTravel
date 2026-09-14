@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="32dp"
     android:gravity="center"
-    android:background="#FFFFFF">
+    android:padding="24dp"
+    tools:context=".RegisterActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="✈️ EasyTravel"
-        android:textSize="36sp"
+        android:text="📝 Create Account"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="#1A237E"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create your account"
-        android:textSize="16sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="32dp" />
 
     <EditText
-        android:id="@+id/etName"
+        android:id="@+id/etFullName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Full Name"
-        android:padding="14dp"
-        android:background="#F5F5F5"
-        android:layout_marginBottom="12dp" />
+        android:inputType="textPersonName"
+        android:padding="12dp" />
 
     <EditText
         android:id="@+id/etEmail"
@@ -39,78 +32,39 @@
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:padding="14dp"
-        android:background="#F5F5F5"
-        android:layout_marginBottom="12dp" />
+        android:padding="12dp"
+        android:layout_marginTop="8dp" />
 
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="Password (min 6 characters)"
         android:inputType="textPassword"
-        android:padding="14dp"
-        android:background="#F5F5F5"
-        android:layout_marginBottom="16dp" />
+        android:padding="12dp"
+        android:layout_marginTop="8dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Role:"
-        android:textSize="14sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="8dp" />
-
-    <RadioGroup
-        android:id="@+id/rgRole"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
-
-        <RadioButton
-            android:id="@+id/rbCustomer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Customer"
-            android:checked="true" />
-
-        <RadioButton
-            android:id="@+id/rbSupplier"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Supplier" />
-
-        <RadioButton
-            android:id="@+id/rbAdmin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Admin" />
-    </RadioGroup>
+    <!-- ✅ 没有角色选择，所有用户默认是 Customer -->
 
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:text="Register"
         android:backgroundTint="#1A237E"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
 
-    <Button
-        android:id="@+id/btnBackToLogin"
+    <TextView
+        android:id="@+id/tvGoLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back to Login"
-        android:backgroundTint="#666666"
-        android:textColor="#FFFFFF"
+        android:text="Already have an account? Login"
+        android:textColor="#1A237E"
         android:textSize="14sp"
-        android:minWidth="0dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:layout_marginTop="12dp" />
+        android:padding="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="true" />
 
 </LinearLayout>

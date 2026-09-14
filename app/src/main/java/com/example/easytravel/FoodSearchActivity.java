@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +22,8 @@ public class FoodSearchActivity extends AppCompatActivity {
     private DealAdapter dealAdapter;
     private List<Deal> foodDeals = new ArrayList<>();
     private List<Deal> filteredDeals = new ArrayList<>();
-    private TextView btnBack;
-    private EditText etSearchFood;
+    private Button btnBack;
+    private EditText etSearchFood;  // ← 添加搜索框
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,51 +33,60 @@ public class FoodSearchActivity extends AppCompatActivity {
         // ========== 找到控件 ==========
         recyclerView = findViewById(R.id.recyclerViewFood);
         btnBack = findViewById(R.id.btnBack);
-        etSearchFood = findViewById(R.id.etSearchFood);
+        etSearchFood = findViewById(R.id.etSearchFood);  // ← 添加搜索框
 
         // ========== 设置 RecyclerView ==========
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        dealAdapter = new DealAdapter();
-        recyclerView.setAdapter(dealAdapter);
+        if (recyclerView != null) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            dealAdapter = new DealAdapter();
+            recyclerView.setAdapter(dealAdapter);
+        }
 
         // ========== 加载 Food 数据 ==========
         loadFoodDeals();
 
         // ========== 返回按钮 ==========
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        if (btnBack != null) {
+            btnBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
 
         // ========== 搜索功能（实时过滤） ==========
-        etSearchFood.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        if (etSearchFood != null) {
+            etSearchFood.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDeals(s.toString());
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    filterDeals(s.toString());
+                }
 
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
 
         // ========== 点击跳转到详情 ==========
-        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Deal deal) {
-                Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
-                intent.putExtra("deal_data", deal);
-                startActivity(intent);
-            }
-        });
+        if (dealAdapter != null) {
+            dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(Deal deal) {
+                    Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
+                    intent.putExtra("deal_data", deal);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     // ========== 搜索过滤 ==========
     private void filterDeals(String query) {
+        if (dealAdapter == null) return;
         filteredDeals.clear();
         if (query.isEmpty()) {
             filteredDeals.addAll(foodDeals);
@@ -144,7 +154,9 @@ public class FoodSearchActivity extends AppCompatActivity {
                 "Class"
         ));
 
-        filteredDeals.addAll(foodDeals);
-        dealAdapter.setDeals(filteredDeals);
+        if (dealAdapter != null) {
+            filteredDeals.addAll(foodDeals);
+            dealAdapter.setDeals(filteredDeals);
+        }
     }
 }
