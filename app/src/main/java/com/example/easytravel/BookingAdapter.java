@@ -6,16 +6,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.easytravel.R;
-import com.example.easytravel.Booking;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingAdapter extends AppCompatActivity {
+// 注意这里：必须继承 RecyclerView.Adapter，不能是 AppCompatActivity
+public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
 
     private List<Booking> bookings = new ArrayList<>();
     private OnBookingClickListener listener;
@@ -30,6 +27,7 @@ public class BookingAdapter extends AppCompatActivity {
 
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
+        notifyDataSetChanged(); // 必须加这一行，否则列表不会刷新
     }
 
     @NonNull
@@ -62,6 +60,7 @@ public class BookingAdapter extends AppCompatActivity {
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
+            // 确保你的 item_booking.xml 里面有这些 ID
             tvTitle = itemView.findViewById(R.id.tvBookingTitle);
             tvDate = itemView.findViewById(R.id.tvBookingDate);
             tvPeople = itemView.findViewById(R.id.tvBookingPeople);
@@ -80,18 +79,15 @@ public class BookingAdapter extends AppCompatActivity {
             // 根据状态显示不同颜色
             if ("CONFIRMED".equals(booking.getStatus())) {
                 tvStatus.setTextColor(0xFF4CAF50);  // 绿色
+                tvCancel.setVisibility(View.GONE);  // 已确认的不能取消
             } else if ("PENDING".equals(booking.getStatus())) {
                 tvStatus.setTextColor(0xFFFF9800);  // 橙色
+                tvCancel.setVisibility(View.VISIBLE); // 只有待定状态能取消
             } else if ("CANCELLED".equals(booking.getStatus())) {
                 tvStatus.setTextColor(0xFFF44336);  // 红色
+                tvCancel.setVisibility(View.GONE);
             } else {
                 tvStatus.setTextColor(0xFF666666);  // 灰色
-            }
-
-            // 只有 PENDING 状态才能取消
-            if ("PENDING".equals(booking.getStatus())) {
-                tvCancel.setVisibility(View.VISIBLE);
-            } else {
                 tvCancel.setVisibility(View.GONE);
             }
         }
