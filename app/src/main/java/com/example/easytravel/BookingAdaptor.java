@@ -1,4 +1,4 @@
-package com.example.easytravel.adapter;
+package com.example.easytravel;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.easytravel.R;
@@ -14,7 +15,7 @@ import com.example.easytravel.Booking;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
+public class BookingAdapter extends AppCompatActivity {
 
     private List<Booking> bookings = new ArrayList<>();
     private OnBookingClickListener listener;
@@ -29,7 +30,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
-        notifyDataSetChanged();
     }
 
     @NonNull
