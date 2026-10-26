@@ -5,14 +5,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.easytravel.adapter.DealAdapter;
-import com.example.easytravel.model.Deal;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,71 +20,56 @@ public class FoodSearchActivity extends AppCompatActivity {
     private DealAdapter dealAdapter;
     private List<Deal> foodDeals = new ArrayList<>();
     private List<Deal> filteredDeals = new ArrayList<>();
-    private Button btnBack;
-    private EditText etSearchFood;  // ← 添加搜索框
+
+    private TextView btnBack;
+    private EditText etSearchFood;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_search);
 
-        // ========== 找到控件 ==========
         recyclerView = findViewById(R.id.recyclerViewFood);
-        btnBack = findViewById(R.id.btnBack);
-        etSearchFood = findViewById(R.id.etSearchFood);  // ← 添加搜索框
+        btnBack = findViewById(R.id.btnBack); // 现在类型匹配了，不会闪退了
+        etSearchFood = findViewById(R.id.etSearchFood);
 
-        // ========== 设置 RecyclerView ==========
-        if (recyclerView != null) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            dealAdapter = new DealAdapter();
-            recyclerView.setAdapter(dealAdapter);
-        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        dealAdapter = new DealAdapter();
+        recyclerView.setAdapter(dealAdapter);
 
-        // ========== 加载 Food 数据 ==========
         loadFoodDeals();
 
-        // ========== 返回按钮 ==========
-        if (btnBack != null) {
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
-        }
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-        // ========== 搜索功能（实时过滤） ==========
-        if (etSearchFood != null) {
-            etSearchFood.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        etSearchFood.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    filterDeals(s.toString());
-                }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterDeals(s.toString());
+            }
 
-                @Override
-                public void afterTextChanged(Editable s) {}
-            });
-        }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
-        // ========== 点击跳转到详情 ==========
-        if (dealAdapter != null) {
-            dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(Deal deal) {
-                    Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
-                    intent.putExtra("deal_data", deal);
-                    startActivity(intent);
-                }
-            });
-        }
+        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Deal deal) {
+                Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
+                intent.putExtra("deal_data", deal);
+                startActivity(intent);
+            }
+        });
     }
 
-    // ========== 搜索过滤 ==========
     private void filterDeals(String query) {
-        if (dealAdapter == null) return;
         filteredDeals.clear();
         if (query.isEmpty()) {
             filteredDeals.addAll(foodDeals);
@@ -102,61 +85,12 @@ public class FoodSearchActivity extends AppCompatActivity {
     }
 
     private void loadFoodDeals() {
-        foodDeals.add(new Deal(
-                "1",
-                "Auckland Fish Market Tour",
-                "Taste fresh seafood at the historic Auckland Fish Market.",
-                "Food",
-                "89.00",
-                "",
-                "Auckland Food Tours",
-                "Auckland CBD",
-                true,
-                "Tour"
-        ));
+        foodDeals.add(new Deal("1", "Auckland Fish Market Tour", "Taste fresh seafood.", "Food", "Seafood", "89.00", "", "S01", "Auckland Food Tours", "Auckland CBD", 4.8, true));
+        foodDeals.add(new Deal("2", "Classic Kiwi Food Tour", "Try NZ's iconic lamb roast.", "Food", "Classic Kiwi", "129.00", "", "S02", "Kiwi Food Adventures", "Auckland CBD", 4.9, true));
+        foodDeals.add(new Deal("3", "Auckland Food Walk", "Explore Asian fusion street food.", "Food", "Asian Fusion", "99.00", "", "S03", "Auckland Food Walk", "Auckland CBD", 4.6, true));
+        foodDeals.add(new Deal("4", "Noodle Making Class", "Learn to make authentic noodles.", "Food", "Cooking", "75.00", "", "S04", "Asian Cooking School", "Auckland CBD", 4.7, true));
 
-        foodDeals.add(new Deal(
-                "2",
-                "Classic Kiwi Food Tour",
-                "Try New Zealand's iconic lamb roast, meat pies, and pavlova.",
-                "Food",
-                "129.00",
-                "",
-                "Kiwi Food Adventures",
-                "Auckland CBD",
-                true,
-                "Tour"
-        ));
-
-        foodDeals.add(new Deal(
-                "3",
-                "Auckland Food Walk",
-                "Explore Asian fusion street food in Auckland.",
-                "Food",
-                "99.00",
-                "",
-                "Auckland Food Walk",
-                "Auckland CBD",
-                true,
-                "Tour"
-        ));
-
-        foodDeals.add(new Deal(
-                "4",
-                "Noodle Making Class",
-                "Learn to make authentic Asian noodles from scratch.",
-                "Food",
-                "75.00",
-                "",
-                "Asian Cooking School",
-                "Auckland CBD",
-                true,
-                "Class"
-        ));
-
-        if (dealAdapter != null) {
-            filteredDeals.addAll(foodDeals);
-            dealAdapter.setDeals(filteredDeals);
-        }
+        filteredDeals.addAll(foodDeals);
+        dealAdapter.setDeals(filteredDeals);
     }
 }

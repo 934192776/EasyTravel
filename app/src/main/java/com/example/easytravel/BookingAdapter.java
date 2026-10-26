@@ -1,4 +1,4 @@
-package com.example.easytravel.adapter;
+package com.example.easytravel;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +7,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.easytravel.R;
-import com.example.easytravel.Booking;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -58,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if (firebaseUser != null) {
                                 String uid = firebaseUser.getUid();
 
-                                // ✅ 所有公开注册的用户都是 Customer
+                                // 所有公开注册的用户都是 Customer
                                 User user = new User(uid, fullName, email, "Customer");
 
                                 userRef.child(uid).setValue(user)

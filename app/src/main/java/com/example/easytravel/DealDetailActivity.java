@@ -6,7 +6,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.easytravel.model.Deal;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DealDetailActivity extends AppCompatActivity {
 
@@ -14,6 +17,7 @@ public class DealDetailActivity extends AppCompatActivity {
     private TextView tvTitle, tvDescription, tvPrice, tvCategory, tvSupplier, tvLocation;
     private ImageView ivImage;
     private Button btnBookNow;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +37,19 @@ public class DealDetailActivity extends AppCompatActivity {
         ivImage = findViewById(R.id.ivDetailImage);
         btnBookNow = findViewById(R.id.btnBookNow);
 
+        // 初始化 Firebase
+        mDatabase = FirebaseDatabase.getInstance().getReference("bookings");
+
         // ========== 显示数据 ==========
         if (deal != null) {
             tvTitle.setText(deal.getTitle());
             tvDescription.setText(deal.getDescription());
             tvPrice.setText("$" + deal.getPrice());
             tvCategory.setText("Category: " + deal.getCategory());
-            tvSupplier.setText("Supplier: " + deal.getSupplier());
+
+            // ✅ 修复了这里的报错，改为 getSupplierName()
+            tvSupplier.setText("Supplier: " + deal.getSupplierName());
+
             tvLocation.setText("Location: " + deal.getLocation());
             setTitle(deal.getTitle());
 
@@ -51,10 +61,32 @@ public class DealDetailActivity extends AppCompatActivity {
             }
         }
 
-        // ========== Book Now 按钮 ==========
+        // ========== Book Now 按钮 (Create 操作) ==========
         btnBookNow.setOnClickListener(v -> {
-            Toast.makeText(this, "Booking successful!", Toast.LENGTH_LONG).show();
-            // TODO: 跳转到预订页面
+            if (deal != null) {
+                // 生成一个唯一的预订ID
+                String bookingId = mDatabase.push().getKey();
+
+                // 组装要存入 Firebase 的预订数据
+                Map<String, Object> bookingData = new HashMap<>();
+                bookingData.put("bookingId", bookingId);
+                bookingData.put("dealTitle", deal.getTitle());
+                bookingData.put("price", deal.getPrice());
+                bookingData.put("status", "PENDING"); // 初始状态为待处理
+                bookingData.put("date", "2026-11-01"); // 演示用日期，实际可让用户选择
+
+                // 写入 Firebase 数据库
+                if (bookingId != null) {
+                    mDatabase.child(bookingId).setValue(bookingData)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(DealDetailActivity.this, "Booking Successful! Saved to Database.", Toast.LENGTH_LONG).show();
+                                finish(); // 预订成功后关闭当前页面
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(DealDetailActivity.this, "Booking Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                }
+            }
         });
     }
 }

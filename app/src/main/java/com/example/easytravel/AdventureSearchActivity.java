@@ -10,8 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.easytravel.adapter.DealAdapter;
-import com.example.easytravel.model.Deal;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,10 +84,14 @@ public class AdventureSearchActivity extends AppCompatActivity {
     }
 
     private void loadAdventureDeals() {
-        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "79.00", "", "Auckland Sailing Co", "Auckland Harbour", true, "Activity"));
-        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "199.00", "", "Adventure NZ", "Auckland Harbour", true, "Activity"));
-        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "299.00", "", "Skydive Auckland", "Auckland", true, "Activity"));
-        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "129.00", "", "Harbour Jet", "Auckland Harbour", true, "Activity"));
+        // 注意：这里我帮你加上了 subCategory 和 supplierId 以匹配 Deal 的构造方法
+        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "Activity", "79.00", "", "S01", "Auckland Sailing Co", "Auckland Harbour", 4.5, true));
+
+        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "Activity", "199.00", "", "S02", "Adventure NZ", "Auckland Harbour", 4.8, true));
+
+        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "Activity", "299.00", "", "S03", "Skydive Auckland", "Auckland", 5.0, true));
+
+        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "Activity", "129.00", "", "S04", "Harbour Jet", "Auckland Harbour", 4.6, true));
 
         filteredDeals.addAll(adventureDeals);
         dealAdapter.setDeals(filteredDeals);

@@ -1,4 +1,4 @@
-package com.example.easytravel.adapter;
+package com.example.easytravel;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.easytravel.R;
-import com.example.easytravel.model.Deal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,10 +80,10 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
             tvRating.setText("⭐ " + deal.getRating());
             tvSupplier.setText("🏪 " + deal.getSupplierName());
 
-            // 用 Glide 加载网络图片
+            // 加载网络图片，如果没有图片，显示默认图片
             Glide.with(itemView.getContext())
                     .load(deal.getImageUrl())
-                    .placeholder(R.drawable.deal_placeholder)
+                    .placeholder(R.drawable.ic_launcher_foreground)
                     .into(ivDealImage);
         }
     }

@@ -10,8 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.easytravel.adapter.DealAdapter;
-import com.example.easytravel.model.Deal;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,25 +18,25 @@ public class CitySearchActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private DealAdapter dealAdapter;
-    private List<Deal> cityDeals = new ArrayList<>();
+    private List<Deal> adventureDeals = new ArrayList<>();
     private List<Deal> filteredDeals = new ArrayList<>();
     private TextView btnBack;
-    private EditText etSearchCity;
+    private EditText etSearchAdventure;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_city_search);
+        setContentView(R.layout.activity_adventure_search);
 
-        recyclerView = findViewById(R.id.recyclerViewCity);
+        recyclerView = findViewById(R.id.recyclerViewAdventure);
         btnBack = findViewById(R.id.btnBack);
-        etSearchCity = findViewById(R.id.etSearchCity);
+        etSearchAdventure = findViewById(R.id.etSearchAdventure);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         dealAdapter = new DealAdapter();
         recyclerView.setAdapter(dealAdapter);
 
-        loadCityDeals();
+        loadAdventureDeals();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +45,7 @@ public class CitySearchActivity extends AppCompatActivity {
             }
         });
 
-        etSearchCity.addTextChangedListener(new TextWatcher() {
+        etSearchAdventure.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -72,9 +71,9 @@ public class CitySearchActivity extends AppCompatActivity {
     private void filterDeals(String query) {
         filteredDeals.clear();
         if (query.isEmpty()) {
-            filteredDeals.addAll(cityDeals);
+            filteredDeals.addAll(adventureDeals);
         } else {
-            for (Deal deal : cityDeals) {
+            for (Deal deal : adventureDeals) {
                 if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
                         deal.getDescription().toLowerCase().contains(query.toLowerCase())) {
                     filteredDeals.add(deal);
@@ -84,13 +83,17 @@ public class CitySearchActivity extends AppCompatActivity {
         dealAdapter.setDeals(filteredDeals);
     }
 
-    private void loadCityDeals() {
-        cityDeals.add(new Deal("1", "Sky Tower & City Walking Tour", "Explore Auckland's iconic Sky Tower.", "City", "89.00", "", "Auckland City Tours", "Auckland CBD", true, "Tour"));
-        cityDeals.add(new Deal("2", "Rotorua Maori Cultural Experience", "Visit a Maori village and enjoy a traditional hangi feast.", "City", "249.00", "", "Cultural Tours NZ", "Rotorua", true, "Tour"));
-        cityDeals.add(new Deal("3", "Auckland Harbour Bridge Climb", "Climb the iconic Auckland Harbour Bridge.", "City", "159.00", "", "Adventure NZ", "Auckland Harbour", true, "Activity"));
-        cityDeals.add(new Deal("4", "Auckland War Memorial Museum", "Explore New Zealand's history at the Auckland Museum.", "City", "25.00", "", "Auckland Museum", "Auckland Domain", true, "Tour"));
+    private void loadAdventureDeals() {
+        // 注意：这里我帮你加上了 subCategory 和 supplierId 以匹配 Deal 的构造方法
+        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "Activity", "79.00", "", "S01", "Auckland Sailing Co", "Auckland Harbour", 4.5, true));
 
-        filteredDeals.addAll(cityDeals);
+        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "Activity", "199.00", "", "S02", "Adventure NZ", "Auckland Harbour", 4.8, true));
+
+        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "Activity", "299.00", "", "S03", "Skydive Auckland", "Auckland", 5.0, true));
+
+        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "Activity", "129.00", "", "S04", "Harbour Jet", "Auckland Harbour", 4.6, true));
+
+        filteredDeals.addAll(adventureDeals);
         dealAdapter.setDeals(filteredDeals);
     }
 }

@@ -1,12 +1,14 @@
 package com.example.easytravel;
 
-public class Deal {
+import java.io.Serializable;
+
+public class Deal implements Serializable {
     private String id;
     private String title;
     private String description;
-    private String category;      // "City", "Adventure", "Food", "Nature"
-    private String subCategory;   // "Seafood", "Classic Kiwi", "Asian Fusion", "Dessert & Cafe"
-    private double price;
+    private String category;
+    private String subCategory;
+    private String price;         // 改为 String，方便直接显示
     private String imageUrl;
     private String supplierId;
     private String supplierName;
@@ -17,8 +19,9 @@ public class Deal {
     public Deal() {
     }
 
+    // 保留你黄色项目里的12个参数构造方法（适配你代码里的调用）
     public Deal(String id, String title, String description, String category,
-                String subCategory, double price, String imageUrl,
+                String subCategory, String price, String imageUrl,
                 String supplierId, String supplierName, String location,
                 double rating, boolean isApproved) {
         this.id = id;
@@ -33,6 +36,21 @@ public class Deal {
         this.location = location;
         this.rating = rating;
         this.isApproved = isApproved;
+    }
+
+    // 备用：10个参数的构造方法（以防你之前的页面调用这个）
+    public Deal(String id, String title, String description, String category,
+                String price, String imageUrl, String supplier, String location,
+                boolean available, String type) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.supplierName = supplier;
+        this.location = location;
+        this.isApproved = available;
     }
 
     public String getId() { return id; }
@@ -50,8 +68,8 @@ public class Deal {
     public String getSubCategory() { return subCategory; }
     public void setSubCategory(String subCategory) { this.subCategory = subCategory; }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getPrice() { return price; }
+    public void setPrice(String price) { this.price = price; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
