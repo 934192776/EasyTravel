@@ -1,10 +1,12 @@
 package com.example.easytravel;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,9 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri selectedImageUri = result.getData().getData();
                     if (selectedImageUri != null) {
-                        // 预览选中的图片
                         Glide.with(this).load(selectedImageUri).into(ivAvatar);
-                        // 上传
                         uploadImageToCloudinary(selectedImageUri);
                     }
                 }
@@ -64,30 +64,52 @@ public class ProfileActivity extends AppCompatActivity {
         userEmail = getIntent().getStringExtra("user_email");
         if (userEmail == null) userEmail = "john@example.com";
 
-        tvName.setText("John Doe");
         tvEmail.setText("📧 " + userEmail);
-        tvPhone.setText("📱 +64 21 123 4567");
         tvMemberSince.setText("📅 Member since: 2024");
 
         String safeEmailKey = userEmail.replace(".", "_");
         mDatabase = FirebaseDatabase.getInstance().getReference("users").child(safeEmailKey);
 
-        // 从 Firebase 读取已保存的头像
-        mDatabase.child("avatarUrl").addValueEventListener(new ValueEventListener() {
+        // ========== 1. 从 Firebase 读取名字和电话 ==========
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String avatarUrl = snapshot.getValue(String.class);
-                if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    Glide.with(ProfileActivity.this).load(avatarUrl).into(ivAvatar);
+                if (snapshot.exists()) {
+                    String realName = snapshot.child("name").getValue(String.class);
+                    String realPhone = snapshot.child("phone").getValue(String.class);
+                    String avatarUrl = snapshot.child("avatarUrl").getValue(String.class);
+
+                    tvName.setText(realName != null && !realName.isEmpty() ? realName : "Jing Hui");
+                    tvPhone.setText(realPhone != null && !realPhone.isEmpty() ? "📱 " + realPhone : "📱 +64 21 123 4567");
+
+                    if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                        Glide.with(ProfileActivity.this).load(avatarUrl).into(ivAvatar);
+                    } else {
+                        ivAvatar.setImageResource(R.drawable.ic_launcher_foreground);
+                    }
                 } else {
-                    // 如果没有头像，显示默认的机器人图标
+                    // 数据库没有该用户节点的默认显示
+                    tvName.setText("Jing Hui");
+                    tvPhone.setText("📱 +64 21 123 4567");
                     ivAvatar.setImageResource(R.drawable.ic_launcher_foreground);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
 
+        // ========== 2. 点击名字进行修改 (Update Name) ==========
+        tvName.setOnClickListener(v -> showEditDialog("name", tvName.getText().toString(), tvName, "Name"));
+
+        // ========== 3. 点击电话进行修改 (Update Phone) ==========
+        tvPhone.setOnClickListener(v -> {
+            // 去掉前面的 emoji 前缀
+            String currentPhone = tvPhone.getText().toString().replace("📱 ", "");
+            showEditDialog("phone", currentPhone, tvPhone, "Phone Number");
+        });
+
+        // 上传头像
         btnUploadAvatar.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
@@ -95,6 +117,37 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         btnBack.setOnClickListener(v -> finish());
+    }
+
+    // ========== 弹窗修改数据的通用方法 ==========
+    private void showEditDialog(String dbField, String currentValue, TextView textView, String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update " + title);
+
+        final EditText input = new EditText(this);
+        input.setText(currentValue);
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newValue = input.getText().toString().trim();
+            if (!newValue.isEmpty()) {
+                // 更新 Firebase 数据库 (Update 操作)
+                mDatabase.child(dbField).setValue(newValue)
+                        .addOnSuccessListener(aVoid -> {
+                            // UI 会通过上面的 ValueEventListener 自动更新，但为了体验，也可以手动 setText
+                            if (dbField.equals("phone")) {
+                                textView.setText("📱 " + newValue);
+                            } else {
+                                textView.setText(newValue);
+                            }
+                            Toast.makeText(ProfileActivity.this, title + " updated in Database!", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(ProfileActivity.this, "Update failed", Toast.LENGTH_SHORT).show());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
     private void uploadImageToCloudinary(Uri imageUri) {
@@ -117,7 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
                         if (secureUrl != null) {
                             mDatabase.child("avatarUrl").setValue(secureUrl)
                                     .addOnSuccessListener(aVoid ->
-                                            Toast.makeText(ProfileActivity.this, "Saved to Database!", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(ProfileActivity.this, "Avatar saved!", Toast.LENGTH_SHORT).show()
                                     );
                         }
                     }
