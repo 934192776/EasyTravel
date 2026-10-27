@@ -6,40 +6,30 @@
     android:padding="24dp"
     android:background="#F5F5F5">
 
-    <!-- ====== 顶部标题 ====== -->
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
+        android:text="Admin Dashboard"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#1A237E"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Customer"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#1A237E"
-            android:gravity="center" />
-    </LinearLayout>
-
-    <!-- ====== 欢迎信息 ====== -->
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome, User!"
+        android:text="Welcome, Admin!"
         android:textSize="18sp"
         android:textColor="#333333"
         android:layout_marginBottom="24dp" />
 
-    <!-- ====== 3个功能按钮 ====== -->
     <Button
         android:id="@+id/btnFeature1"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Feature 1"
+        android:text="Manage Users"
         android:backgroundTint="#2196F3"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
@@ -49,7 +39,7 @@
         android:id="@+id/btnFeature2"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Feature 2"
+        android:text="Approve Deals"
         android:backgroundTint="#4CAF50"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
@@ -59,26 +49,23 @@
         android:id="@+id/btnFeature3"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Feature 3"
+        android:text="View Reports"
         android:backgroundTint="#FF9800"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:layout_marginBottom="24dp" />
 
-    <!-- ====== 弹性空间（把底部的按钮推到屏幕最下方） ====== -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- ====== 底部按钮区域：左边箭头，右边Logout ====== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <!-- 返回箭头 (去掉了背景色，看起来就像个箭头) -->
         <Button
             android:id="@+id/btnGoHome"
             android:layout_width="wrap_content"
@@ -89,13 +76,11 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <!-- 中间的弹簧，把左右两边推开 -->
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <!-- 退出登录按钮 (红色) -->
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
@@ -104,6 +89,7 @@
             android:backgroundTint="#F44336"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
+
     </LinearLayout>
 
 </LinearLayout>

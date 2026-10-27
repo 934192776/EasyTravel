@@ -1,12 +1,16 @@
-package com.example.easytravel;
+
+        package com.example.easytravel;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -25,59 +29,62 @@ public class AdminDashboardActivity extends AppCompatActivity {
         btnGoHome = findViewById(R.id.btnGoHome);
         btnLogout = findViewById(R.id.btnLogout);
 
-        final String email = getIntent().getStringExtra("user_email");
-        String displayEmail = (email == null) ? "Admin" : email;
-        tvWelcome.setText("👑 Welcome, " + displayEmail + "!");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String displayEmail = user != null && user.getEmail() != null
+                ? user.getEmail()
+                : "Admin";
 
-        // ========== 功能1：管理用户 → 跳转到 ManageUsersActivity ==========
-        btnFeature1.setText("👥 Manage Users");
-        btnFeature1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminDashboardActivity.this, ManageUsersActivity.class);
-                startActivity(intent);
-            }
+        tvWelcome.setText("Welcome, " + displayEmail + "!");
+
+        btnFeature1.setText("Manage Users");
+        btnFeature1.setOnClickListener(v ->
+                startActivity(new Intent(
+                        AdminDashboardActivity.this,
+                        ManageUsersActivity.class
+                ))
+        );
+
+        btnFeature2.setText("Approve Deals");
+        btnFeature2.setOnClickListener(v ->
+                startActivity(new Intent(
+                        AdminDashboardActivity.this,
+                        ApproveDealsActivity.class
+                ))
+        );
+
+        btnFeature3.setText("View Reports");
+        btnFeature3.setOnClickListener(v ->
+                startActivity(new Intent(
+                        AdminDashboardActivity.this,
+                        AdminReportsActivity.class
+                ))
+        );
+
+        btnGoHome.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    AdminDashboardActivity.this,
+                    HomeActivity.class
+            );
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         });
 
-        // ========== 功能2：审核Deal → 跳转到 ApproveDealsActivity ==========
-        btnFeature2.setText("📝 Approve Deals");
-        btnFeature2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminDashboardActivity.this, ApproveDealsActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
 
-        // ========== 功能3：查看报告 → 跳转到 AdminReportsActivity ==========
-        btnFeature3.setText("📊 View Reports");
-        btnFeature3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminDashboardActivity.this, AdminReportsActivity.class);
-                startActivity(intent);
-            }
-        });
+            Intent intent = new Intent(
+                    AdminDashboardActivity.this,
+                    LoginActivity.class
+            );
 
-        btnGoHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AdminDashboardActivity.this, HomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }
-        });
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(AdminDashboardActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(AdminDashboardActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
+            startActivity(intent);
+            finish();
         });
     }
 }
