@@ -3,7 +3,6 @@ package com.example.easytravel;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -25,8 +24,6 @@ import java.util.Locale;
 
 public class ManageUsersActivity extends AppCompatActivity {
 
-    private Button btnBack;
-    private Button btnRefreshUsers;
     private EditText etSearchUser;
     private LinearLayout userListContainer;
     private TextView tvUserCount;
@@ -41,8 +38,8 @@ public class ManageUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_users);
 
-        btnBack = findViewById(R.id.btnBack);
-        btnRefreshUsers = findViewById(R.id.btnRefreshUsers);
+        Button btnBack = findViewById(R.id.btnBack);
+        Button btnRefreshUsers = findViewById(R.id.btnRefreshUsers);
         etSearchUser = findViewById(R.id.etSearchUser);
         userListContainer = findViewById(R.id.userListContainer);
         tvUserCount = findViewById(R.id.tvUserCount);
@@ -55,20 +52,38 @@ public class ManageUsersActivity extends AppCompatActivity {
 
         etSearchUser.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) { }
+            public void beforeTextChanged(
+                    CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
+            public void onTextChanged(
+                    CharSequence s, int start, int before, int count) {
                 displayUsers();
             }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         loadUsers();
+    }
+
+    private String readString(DataSnapshot snapshot, String... keys) {
+        for (String key : keys) {
+            Object value = snapshot.child(key).getValue();
+
+            if (value != null) {
+                String result = String.valueOf(value).trim();
+
+                if (!result.isEmpty()) {
+                    return result;
+                }
+            }
+        }
+
+        return "";
     }
 
     private void loadUsers() {
@@ -85,41 +100,49 @@ public class ManageUsersActivity extends AppCompatActivity {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
                     String id = child.getKey();
-                    String name = child.child("fullName").getValue(String.class);
-                    String email = child.child("email").getValue(String.class);
-                    String role = child.child("role").getValue(String.class);
 
-                    if (name == null) {
-                        name = child.child("name").getValue(String.class);
+                    String name = readString(
+                            child, "fullName", "Full Name", "name",
+                            "full_name", "username"
+                    );
+
+                    String email = readString(
+                            child, "email", "Email"
+                    );
+
+                    String role = readString(
+                            child, "role", "Role", "userRole"
+                    );
+
+                    if (name.isEmpty()) {
+                        name = "Unnamed user";
                     }
 
-                    if (email == null) {
-                        email = "";
-                    }
-
-                    if (role == null) {
+                    if (role.isEmpty()) {
                         role = "Unspecified";
                     }
 
                     users.add(new UserEntry(
                             id == null ? "" : id,
-                            name == null || name.trim().isEmpty()
-                                    ? "Unnamed user" : name,
+                            name,
                             email,
                             role
                     ));
                 }
 
                 displayUsers();
+
                 tvUserStatus.setText(
-                        users.isEmpty() ? "No users found in Firebase."
-                                : "User data loaded."
+                        users.isEmpty()
+                                ? "No users found in Firebase."
+                                : "Loaded " + users.size() + " user records."
                 );
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 tvUserStatus.setText("Unable to load users.");
+
                 Toast.makeText(
                         ManageUsersActivity.this,
                         error.getMessage(),
@@ -132,45 +155,58 @@ public class ManageUsersActivity extends AppCompatActivity {
     }
 
     private void displayUsers() {
-        if (userListContainer == null) return;
+        if (userListContainer == null) {
+            return;
+        }
 
         userListContainer.removeAllViews();
 
         String query = etSearchUser.getText()
-                .toString().trim().toLowerCase(Locale.ROOT);
+                .toString()
+                .trim()
+                .toLowerCase(Locale.ROOT);
 
         int shown = 0;
 
         for (UserEntry user : users) {
-            String searchable = (user.name + " " + user.email + " "
-                    + user.role).toLowerCase(Locale.ROOT);
+            String searchable = (
+                    user.name + " " + user.email + " " + user.role
+            ).toLowerCase(Locale.ROOT);
 
-            if (!searchable.contains(query)) continue;
+            if (!searchable.contains(query)) {
+                continue;
+            }
 
             LinearLayout card = new LinearLayout(this);
             card.setOrientation(LinearLayout.VERTICAL);
             card.setPadding(32, 24, 32, 24);
+            card.setBackgroundResource(
+                    android.R.drawable.dialog_holo_light_frame
+            );
 
-            LinearLayout.LayoutParams cardParams =
+            LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                     );
-            cardParams.setMargins(0, 0, 0, 20);
-            card.setLayoutParams(cardParams);
-            card.setBackgroundResource(
-                    android.R.drawable.dialog_holo_light_frame
-            );
+
+            params.setMargins(0, 0, 0, 20);
+            card.setLayoutParams(params);
 
             TextView nameView = new TextView(this);
             nameView.setText(user.name);
             nameView.setTextSize(18);
             nameView.setTextColor(0xFF172554);
-            nameView.setTypeface(null, android.graphics.Typeface.BOLD);
+            nameView.setTypeface(
+                    null, android.graphics.Typeface.BOLD
+            );
 
             TextView emailView = new TextView(this);
-            emailView.setText("Email: " +
-                    (user.email.isEmpty() ? "Not provided" : user.email));
+            emailView.setText(
+                    "Email: " +
+                            (user.email.isEmpty()
+                                    ? "Not provided" : user.email)
+            );
             emailView.setTextSize(14);
 
             TextView roleView = new TextView(this);
@@ -180,8 +216,8 @@ public class ManageUsersActivity extends AppCompatActivity {
             card.addView(nameView);
             card.addView(emailView);
             card.addView(roleView);
-            userListContainer.addView(card);
 
+            userListContainer.addView(card);
             shown++;
         }
 
@@ -189,9 +225,13 @@ public class ManageUsersActivity extends AppCompatActivity {
 
         if (shown == 0) {
             TextView emptyView = new TextView(this);
-            emptyView.setText(users.isEmpty()
-                    ? "No users available."
-                    : "No users match your search.");
+
+            emptyView.setText(
+                    users.isEmpty()
+                            ? "No users available."
+                            : "No users match your search."
+            );
+
             emptyView.setTextSize(16);
             emptyView.setPadding(8, 24, 8, 24);
             userListContainer.addView(emptyView);
@@ -200,11 +240,11 @@ public class ManageUsersActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         if (usersRef != null && usersListener != null) {
             usersRef.removeEventListener(usersListener);
         }
+
+        super.onDestroy();
     }
 
     private static class UserEntry {

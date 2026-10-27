@@ -3,186 +3,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="#F8FAFC"
+    android:padding="20dp">
 
-    <!-- 标题 -->
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2196F3" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="📝 Approve Deals"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#1A237E"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginTop="12dp"
+        android:text="Approve Deals"
+        android:textColor="#172554"
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#DDDDDD"
-        android:layout_marginBottom="16dp" />
-
-    <!-- 待审核 Deal 1 -->
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginTop="6dp"
+        android:text="Review and manage submitted travel deals."
+        android:textColor="#64748B"
+        android:textSize="14sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="🍕 Pizza Deal"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#1A237E" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="From: Supplier A"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Price: $25.00"
-                    android:textSize="14sp"
-                    android:textColor="#E53935" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/btnApprove1"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="✅ Approve"
-                android:backgroundTint="#4CAF50"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:layout_marginEnd="8dp" />
-
-            <Button
-                android:id="@+id/btnReject1"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="❌ Reject"
-                android:backgroundTint="#F44336"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- 待审核 Deal 2 -->
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:text="Loading deals..."
+        android:textColor="#334155"
+        android:textSize="14sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+    <Button
+        android:id="@+id/btnRefreshDeals"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Refresh Deals"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2196F3" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="🧖 Facial Treatment"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#1A237E" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="From: Supplier B"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Price: $60.00"
-                    android:textSize="14sp"
-                    android:textColor="#E53935" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/btnApprove2"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="✅ Approve"
-                android:backgroundTint="#4CAF50"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:layout_marginEnd="8dp" />
-
-            <Button
-                android:id="@+id/btnReject2"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="❌ Reject"
-                android:backgroundTint="#F44336"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:fillViewport="true">
 
-    <!-- 返回按钮 -->
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Back"
-        android:backgroundTint="#666666"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        <LinearLayout
+            android:id="@+id/dealsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
 
 </LinearLayout>
