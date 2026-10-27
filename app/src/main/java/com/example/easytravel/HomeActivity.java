@@ -2,17 +2,25 @@ package com.example.easytravel;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
     private RecyclerView recyclerViewFeatured;
     private DealAdapter dealAdapter;
     private List<Deal> allDeals = new ArrayList<>();
+    private List<Deal> filteredDeals = new ArrayList<>();
 
     private LinearLayout categoryCity, categoryAdventure, categoryFood, categoryNature;
     private EditText etSearch;
@@ -31,140 +40,106 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // ========== 找到控件 ==========
+        // 找到控件
         recyclerViewFeatured = findViewById(R.id.recyclerViewFeatured);
         categoryCity = findViewById(R.id.categoryCity);
         categoryAdventure = findViewById(R.id.categoryAdventure);
         categoryFood = findViewById(R.id.categoryFood);
         categoryNature = findViewById(R.id.categoryNature);
         etSearch = findViewById(R.id.etSearch);
-        btnLogin = findViewById(R.id.btnLogin);  // ← 新增
+        btnLogin = findViewById(R.id.btnLogin);
 
-        // ========== 设置 RecyclerView ==========
+        // 设置 RecyclerView
         recyclerViewFeatured.setLayoutManager(new LinearLayoutManager(this));
         dealAdapter = new DealAdapter();
         recyclerViewFeatured.setAdapter(dealAdapter);
 
-        // ========== 加载所有数据 ==========
-        loadAllDeals();
+        // ========== 🔥 关键修改：从 Firebase 读取真实数据 ==========
+        loadDealsFromFirebase();
 
-        // ========== Login 按钮点击 ==========
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+        // ========== 右上角按钮逻辑 ==========
+        btnLogin.setOnClickListener(v -> {
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser != null) {
+                Intent intent = new Intent(HomeActivity.this, CustomerDashboardActivity.class);
+                intent.putExtra("user_email", currentUser.getEmail());
                 startActivity(intent);
+            } else {
+                Toast.makeText(HomeActivity.this, "Please login to view your bookings.", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             }
         });
 
-        // ========== 搜索功能：按回车键搜索 ==========
-        etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        // ========== 搜索框实时过滤功能 ==========
+        etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    performSearch(etSearch.getText().toString().trim());
-                    return true;
-                }
-                return false;
-            }
-        });
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // ========== 分类点击 ==========
-        categoryCity.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, CitySearchActivity.class);
-                startActivity(intent);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterDeals(s.toString().trim());
             }
-        });
 
-        categoryAdventure.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, AdventureSearchActivity.class);
-                startActivity(intent);
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
-        categoryFood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, FoodSearchActivity.class);
-                startActivity(intent);
-            }
-        });
+        // 分类点击
+        categoryCity.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, CitySearchActivity.class)));
+        categoryAdventure.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, AdventureSearchActivity.class)));
+        categoryFood.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, FoodSearchActivity.class)));
+        categoryNature.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, NatureSearchActivity.class)));
 
-        categoryNature.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, NatureSearchActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // ========== 点击列表项跳转到详情 ==========
-        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Deal deal) {
-                Intent intent = new Intent(HomeActivity.this, DealDetailActivity.class);
-                intent.putExtra("deal_data", deal);
-                startActivity(intent);
-            }
-        });
-    }
-
-    // ========== 执行搜索 ==========
-    private void performSearch(String query) {
-        if (query.isEmpty()) {
-            Toast.makeText(this, "Please enter a keyword", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String lowerQuery = query.toLowerCase();
-        Intent intent = null;
-
-        if (lowerQuery.contains("skydive") || lowerQuery.contains("sky")) {
-            intent = new Intent(HomeActivity.this, AdventureSearchActivity.class);
-            intent.putExtra("search_keyword", query);
-        } else if (lowerQuery.contains("noodle") || lowerQuery.contains("food") || lowerQuery.contains("eat")) {
-            intent = new Intent(HomeActivity.this, FoodSearchActivity.class);
-            intent.putExtra("search_keyword", query);
-        } else if (lowerQuery.contains("city") || lowerQuery.contains("tour") || lowerQuery.contains("walk")) {
-            intent = new Intent(HomeActivity.this, CitySearchActivity.class);
-            intent.putExtra("search_keyword", query);
-        } else if (lowerQuery.contains("nature") || lowerQuery.contains("wild") || lowerQuery.contains("hike")) {
-            intent = new Intent(HomeActivity.this, NatureSearchActivity.class);
-            intent.putExtra("search_keyword", query);
-        } else {
-            Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (intent != null) {
+        // 点击列表项跳转到详情
+        dealAdapter.setOnItemClickListener(deal -> {
+            Intent intent = new Intent(HomeActivity.this, DealDetailActivity.class);
+            intent.putExtra("deal_data", deal);
             startActivity(intent);
-        }
+        });
     }
 
-    // ========== 加载所有数据 ==========
-    private void loadAllDeals() {
-        allDeals.add(new Deal("1", "Sky Tower & City Walking Tour", "Explore Auckland's iconic Sky Tower.", "City", "89.00", "", "Auckland City Tours", "Auckland CBD", true, "Tour"));
-        allDeals.add(new Deal("2", "Rotorua Maori Cultural Experience", "Visit a Maori village and enjoy a traditional hangi feast.", "City", "249.00", "", "Cultural Tours NZ", "Rotorua", true, "Tour"));
-        allDeals.add(new Deal("3", "Auckland Harbour Bridge Climb", "Climb the iconic Auckland Harbour Bridge.", "City", "159.00", "", "Adventure NZ", "Auckland Harbour", true, "Activity"));
-        allDeals.add(new Deal("4", "Auckland War Memorial Museum", "Explore New Zealand's history at the Auckland Museum.", "City", "25.00", "", "Auckland Museum", "Auckland Domain", true, "Tour"));
-        allDeals.add(new Deal("5", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "79.00", "", "Auckland Sailing Co", "Auckland Harbour", true, "Activity"));
-        allDeals.add(new Deal("6", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "199.00", "", "Adventure NZ", "Auckland Harbour", true, "Activity"));
-        allDeals.add(new Deal("7", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "299.00", "", "Skydive Auckland", "Auckland", true, "Activity"));
-        allDeals.add(new Deal("8", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "129.00", "", "Harbour Jet", "Auckland Harbour", true, "Activity"));
-        allDeals.add(new Deal("9", "Auckland Fish Market Tour", "Taste fresh seafood at the historic Auckland Fish Market.", "Food", "89.00", "", "Auckland Food Tours", "Auckland CBD", true, "Tour"));
-        allDeals.add(new Deal("10", "Classic Kiwi Food Tour", "Try New Zealand's iconic lamb roast, meat pies, and pavlova.", "Food", "129.00", "", "Kiwi Food Adventures", "Auckland CBD", true, "Tour"));
-        allDeals.add(new Deal("11", "Auckland Food Walk", "Explore Asian fusion street food in Auckland.", "Food", "99.00", "", "Auckland Food Walk", "Auckland CBD", true, "Tour"));
-        allDeals.add(new Deal("12", "Noodle Making Class", "Learn to make authentic Asian noodles from scratch.", "Food", "75.00", "", "Asian Cooking School", "Auckland CBD", true, "Class"));
-        allDeals.add(new Deal("13", "Waitomo Glowworm Caves Tour", "Experience the magical glowworm caves in Waitomo.", "Nature", "159.00", "", "Nature Adventures NZ", "Waitomo", true, "Tour"));
-        allDeals.add(new Deal("14", "Rangitoto Island Volcano Hike", "Hike to the summit of Auckland's iconic volcano.", "Nature", "69.00", "", "Nature Adventures NZ", "Rangitoto Island", true, "Activity"));
-        allDeals.add(new Deal("15", "Piha Beach & Rainforest Walk", "Explore the black sand beach and lush rainforest.", "Nature", "49.00", "", "Nature Tours NZ", "Piha", true, "Tour"));
-        allDeals.add(new Deal("16", "Tiritiri Matangi Bird Sanctuary", "Bird watching tour on a protected island sanctuary.", "Nature", "85.00", "", "Bird Watching NZ", "Tiritiri Matangi", true, "Tour"));
+    // ========== 从 Firebase 读取数据 ==========
+    private void loadDealsFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("deals");
 
-        dealAdapter.setDeals(allDeals);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allDeals.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    // 自动将 Firebase 的数据转换成 Deal 对象（包括价格、评分、图片）
+                    Deal deal = dataSnapshot.getValue(Deal.class);
+                    if (deal != null) {
+                        allDeals.add(deal);
+                    }
+                }
+
+                // 默认显示全部
+                filteredDeals.clear();
+                filteredDeals.addAll(allDeals);
+                dealAdapter.setDeals(filteredDeals);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(HomeActivity.this, "Failed to load data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // 实时过滤本地数据
+    private void filterDeals(String query) {
+        filteredDeals.clear();
+        if (query.isEmpty()) {
+            filteredDeals.addAll(allDeals);
+        } else {
+            for (Deal deal : allDeals) {
+                if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                        deal.getCategory().toLowerCase().contains(query.toLowerCase())) {
+                    filteredDeals.add(deal);
+                }
+            }
+        }
+        dealAdapter.setDeals(filteredDeals);
     }
 }

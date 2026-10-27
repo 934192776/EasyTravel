@@ -1,15 +1,17 @@
 package com.example.easytravel;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DealDetailActivity extends AppCompatActivity {
 
@@ -24,10 +26,8 @@ public class DealDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deal_detail);
 
-        // ========== 获取数据 ==========
         deal = (Deal) getIntent().getSerializableExtra("deal_data");
 
-        // ========== 找到控件 ==========
         tvTitle = findViewById(R.id.tvDetailTitle);
         tvDescription = findViewById(R.id.tvDetailDesc);
         tvPrice = findViewById(R.id.tvDetailPrice);
@@ -37,56 +37,102 @@ public class DealDetailActivity extends AppCompatActivity {
         ivImage = findViewById(R.id.ivDetailImage);
         btnBookNow = findViewById(R.id.btnBookNow);
 
-        // 初始化 Firebase
         mDatabase = FirebaseDatabase.getInstance().getReference("bookings");
 
-        // ========== 显示数据 ==========
         if (deal != null) {
             tvTitle.setText(deal.getTitle());
             tvDescription.setText(deal.getDescription());
             tvPrice.setText("$" + deal.getPrice());
-            tvCategory.setText("Category: " + deal.getCategory());
-
-            // ✅ 修复了这里的报错，改为 getSupplierName()
+            tvCategory.setText(deal.getCategory());
             tvSupplier.setText("Supplier: " + deal.getSupplierName());
-
             tvLocation.setText("Location: " + deal.getLocation());
             setTitle(deal.getTitle());
 
-            // 加载图片
             if (deal.getImageUrl() != null && !deal.getImageUrl().isEmpty()) {
-                // 后续用 Glide 加载
+                Glide.with(this).load(deal.getImageUrl()).into(ivImage);
             } else {
                 ivImage.setImageResource(R.drawable.ic_launcher_foreground);
             }
         }
 
-        // ========== Book Now 按钮 (Create 操作) ==========
+        // ========== Book Now 按钮 ==========
         btnBookNow.setOnClickListener(v -> {
             if (deal != null) {
-                // 生成一个唯一的预订ID
-                String bookingId = mDatabase.push().getKey();
-
-                // 组装要存入 Firebase 的预订数据
-                Map<String, Object> bookingData = new HashMap<>();
-                bookingData.put("bookingId", bookingId);
-                bookingData.put("dealTitle", deal.getTitle());
-                bookingData.put("price", deal.getPrice());
-                bookingData.put("status", "PENDING"); // 初始状态为待处理
-                bookingData.put("date", "2026-11-01"); // 演示用日期，实际可让用户选择
-
-                // 写入 Firebase 数据库
-                if (bookingId != null) {
-                    mDatabase.child(bookingId).setValue(bookingData)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(DealDetailActivity.this, "Booking Successful! Saved to Database.", Toast.LENGTH_LONG).show();
-                                finish(); // 预订成功后关闭当前页面
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(DealDetailActivity.this, "Booking Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                }
+                showBookingDialog();
             }
         });
+    }
+
+    // ========== 显示输入人数的对话框 ==========
+    private void showBookingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Number of People");
+
+        // 创建一个输入框用来输入人数
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setText("2"); // 默认填2
+        builder.setView(input);
+
+        // 确认按钮
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            String peopleStr = input.getText().toString();
+            if (peopleStr.isEmpty()) {
+                Toast.makeText(this, "Please enter a number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int numberOfPeople = Integer.parseInt(peopleStr);
+            if (numberOfPeople <= 0) {
+                Toast.makeText(this, "Number of people must be at least 1", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 计算总价：单价 * 人数
+            double pricePerPerson = 0.0;
+            try {
+                pricePerPerson = Double.parseDouble(deal.getPrice());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            double totalPrice = pricePerPerson * numberOfPeople;
+
+            // 保存到 Firebase
+            saveBookingToFirebase(numberOfPeople, totalPrice);
+        });
+
+        // 取消按钮
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    // ========== 将预订数据存入 Firebase ==========
+    private void saveBookingToFirebase(int peopleCount, double totalPrice) {
+        String bookingId = mDatabase.push().getKey();
+
+        Booking newBooking = new Booking();
+        newBooking.setId(bookingId);
+        newBooking.setDealId(deal.getId());
+        newBooking.setDealTitle(deal.getTitle());
+        newBooking.setCustomerName("John Doe"); // 演示用名字
+        newBooking.setDate("2026-11-01");
+        newBooking.setNumberOfPeople(peopleCount); // 使用用户输入的人数
+        newBooking.setTotalPrice(totalPrice);      // 使用计算出的总价
+        newBooking.setStatus("PENDING");
+        newBooking.setTimestamp(System.currentTimeMillis());
+
+        if (bookingId != null) {
+            mDatabase.child(bookingId).setValue(newBooking)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(DealDetailActivity.this,
+                                "Booking Successful!\n" + peopleCount + " people - Total: $" + totalPrice,
+                                Toast.LENGTH_LONG).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(DealDetailActivity.this, "Booking Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 }

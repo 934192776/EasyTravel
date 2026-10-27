@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="#F5F5F5">
 
-    <!-- ====== 标题放在正中央 ====== -->
+    <!-- 标题 -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
         android:background="#DDDDDD"
         android:layout_marginBottom="16dp" />
 
-    <!-- ====== 头像 ====== -->
+    <!-- 头像区域 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,15 +35,33 @@
         android:background="#FFFFFF"
         android:layout_marginBottom="16dp">
 
-        <TextView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:text="JD"
-            android:textSize="28sp"
+        <!-- 使用 CardView 实现圆形头像 -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:cardCornerRadius="60dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#E0E0E0">
+
+            <ImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- 改造成精致的修改按钮 -->
+        <Button
+            android:id="@+id/btnUploadAvatar"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Change Picture"
+            android:textAllCaps="false"
+            android:backgroundTint="#4CAF50"
             android:textColor="#FFFFFF"
-            android:gravity="center"
-            android:background="#1A237E"
-            android:textStyle="bold" />
+            android:textSize="12sp"
+            android:layout_marginTop="12dp" />
 
         <TextView
             android:id="@+id/tvName"
@@ -63,7 +82,7 @@
             android:textColor="#666666" />
     </LinearLayout>
 
-    <!-- ====== 个人信息 ====== -->
+    <!-- 个人信息 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -105,13 +124,11 @@
             android:textColor="#333333" />
     </LinearLayout>
 
-    <!-- ====== 弹性空间，把按钮推到底部 ====== -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- ====== 返回按钮放在底部中间 ====== -->
     <Button
         android:id="@+id/btnBack"
         android:layout_width="match_parent"

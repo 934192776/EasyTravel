@@ -44,8 +44,14 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    implementation("com.github.bumptech.glide:glide:4.15.1")
+    // Retrofit 网络请求库
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Maven Central 版本
+    implementation("com.cloudinary:cloudinary-android:3.1.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

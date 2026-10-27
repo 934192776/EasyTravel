@@ -76,14 +76,23 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
             tvTitle.setText(deal.getTitle());
             tvCategory.setText(deal.getCategory());
             tvPrice.setText("$" + deal.getPrice());
-            tvLocation.setText("📍 " + deal.getLocation());
-            tvRating.setText("⭐ " + deal.getRating());
+
+            // 地址判空
+            String loc = deal.getLocation() != null ? deal.getLocation() : "Auckland";
+            tvLocation.setText("📍 " + loc);
+
+            // 评分判空（大于0显示真实评分，否则显示 4.5）
+            double rating = deal.getRating();
+            tvRating.setText("⭐ " + (rating > 0 ? rating : "4.5"));
+
+            // 👈 直接调用智能方法，不需要再判断 null 了
             tvSupplier.setText("🏪 " + deal.getSupplierName());
 
-            // 加载网络图片，如果没有图片，显示默认图片
+            // 加载图片
             Glide.with(itemView.getContext())
                     .load(deal.getImageUrl())
                     .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
                     .into(ivDealImage);
         }
     }

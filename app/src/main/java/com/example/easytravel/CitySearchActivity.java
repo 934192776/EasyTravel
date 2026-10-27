@@ -4,13 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,82 +16,60 @@ public class CitySearchActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private DealAdapter dealAdapter;
-    private List<Deal> adventureDeals = new ArrayList<>();
+    private List<Deal> cityDeals = new ArrayList<>();
     private List<Deal> filteredDeals = new ArrayList<>();
     private TextView btnBack;
-    private EditText etSearchAdventure;
+    private EditText etSearchCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_adventure_search);
+        setContentView(R.layout.activity_city_search);
 
-        recyclerView = findViewById(R.id.recyclerViewAdventure);
+        recyclerView = findViewById(R.id.recyclerViewCity);
         btnBack = findViewById(R.id.btnBack);
-        etSearchAdventure = findViewById(R.id.etSearchAdventure);
+        etSearchCity = findViewById(R.id.etSearchCity);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         dealAdapter = new DealAdapter();
         recyclerView.setAdapter(dealAdapter);
 
-        loadAdventureDeals();
+        loadCityDeals();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        btnBack.setOnClickListener(v -> finish());
+
+        etSearchCity.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { filterDeals(s.toString()); }
+            @Override public void afterTextChanged(Editable s) {}
         });
 
-        etSearchAdventure.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDeals(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Deal deal) {
-                Intent intent = new Intent(CitySearchActivity.this, DealDetailActivity.class);
-                intent.putExtra("deal_data", deal);
-                startActivity(intent);
-            }
+        dealAdapter.setOnItemClickListener(deal -> {
+            Intent intent = new Intent(CitySearchActivity.this, DealDetailActivity.class);
+            intent.putExtra("deal_data", deal);
+            startActivity(intent);
         });
     }
 
     private void filterDeals(String query) {
         filteredDeals.clear();
         if (query.isEmpty()) {
-            filteredDeals.addAll(adventureDeals);
+            filteredDeals.addAll(cityDeals);
         } else {
-            for (Deal deal : adventureDeals) {
-                if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                        deal.getDescription().toLowerCase().contains(query.toLowerCase())) {
-                    filteredDeals.add(deal);
-                }
+            for (Deal deal : cityDeals) {
+                if (deal.getTitle().toLowerCase().contains(query.toLowerCase())) filteredDeals.add(deal);
             }
         }
         dealAdapter.setDeals(filteredDeals);
     }
 
-    private void loadAdventureDeals() {
-        // 注意：这里我帮你加上了 subCategory 和 supplierId 以匹配 Deal 的构造方法
-        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "Activity", "79.00", "", "S01", "Auckland Sailing Co", "Auckland Harbour", 4.5, true));
+    private void loadCityDeals() {
+        cityDeals.add(new Deal("1", "Sky Tower & City Walking Tour", "Explore Auckland's iconic Sky Tower.", "City", "89.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793064697/mhqblarw7jyejtjwpf1v.webp", "Auckland City Tours", "Auckland CBD", true, "Tour"));
+        cityDeals.add(new Deal("2", "Rotorua Maori Cultural Experience", "Visit a Maori village and enjoy a traditional hangi feast.", "City", "249.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793065506/inxec2ztawqi7sixekms.webp", "Cultural Tours NZ", "Rotorua", true, "Tour"));
+        cityDeals.add(new Deal("3", "Auckland Harbour Bridge Climb", "Climb the iconic Auckland Harbour Bridge.", "City", "159.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793065506/qao2yj9lj6kwurgtabgg.jpg", "Adventure NZ", "Auckland Harbour", true, "Activity"));
+        cityDeals.add(new Deal("4", "Auckland War Memorial Museum", "Explore New Zealand's history at the Auckland Museum.", "City", "25.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793066052/rquvpx65c6mygfygspvo.jpg", "Auckland Museum", "Auckland Domain", true, "Tour"));
 
-        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "Activity", "199.00", "", "S02", "Adventure NZ", "Auckland Harbour", 4.8, true));
-
-        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "Activity", "299.00", "", "S03", "Skydive Auckland", "Auckland", 5.0, true));
-
-        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "Activity", "129.00", "", "S04", "Harbour Jet", "Auckland Harbour", 4.6, true));
-
-        filteredDeals.addAll(adventureDeals);
+        filteredDeals.addAll(cityDeals);
         dealAdapter.setDeals(filteredDeals);
     }
 }

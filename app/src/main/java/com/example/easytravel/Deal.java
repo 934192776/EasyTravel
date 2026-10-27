@@ -12,6 +12,7 @@ public class Deal implements Serializable {
     private String imageUrl;
     private String supplierId;
     private String supplierName;
+    private String supplier;      // 👈 新增：兼容 Firebase 里的 "supplier" 字段
     private String location;
     private double rating;
     private boolean isApproved;
@@ -19,7 +20,7 @@ public class Deal implements Serializable {
     public Deal() {
     }
 
-    // 保留你黄色项目里的12个参数构造方法（适配你代码里的调用）
+    // 12个参数构造方法
     public Deal(String id, String title, String description, String category,
                 String subCategory, String price, String imageUrl,
                 String supplierId, String supplierName, String location,
@@ -33,12 +34,13 @@ public class Deal implements Serializable {
         this.imageUrl = imageUrl;
         this.supplierId = supplierId;
         this.supplierName = supplierName;
+        this.supplier = supplierName; // 👈 同步赋值
         this.location = location;
-        this.rating = rating;
         this.isApproved = isApproved;
+        this.rating = Math.round((4.0 + (Math.random() * 1.0)) * 10.0) / 10.0;
     }
 
-    // 备用：10个参数的构造方法（以防你之前的页面调用这个）
+    // 10个参数构造方法
     public Deal(String id, String title, String description, String category,
                 String price, String imageUrl, String supplier, String location,
                 boolean available, String type) {
@@ -49,8 +51,10 @@ public class Deal implements Serializable {
         this.price = price;
         this.imageUrl = imageUrl;
         this.supplierName = supplier;
+        this.supplier = supplier; // 👈 同步赋值
         this.location = location;
         this.isApproved = available;
+        this.rating = Math.round((4.0 + (Math.random() * 1.0)) * 10.0) / 10.0;
     }
 
     public String getId() { return id; }
@@ -77,8 +81,24 @@ public class Deal implements Serializable {
     public String getSupplierId() { return supplierId; }
     public void setSupplierId(String supplierId) { this.supplierId = supplierId; }
 
-    public String getSupplierName() { return supplierName; }
-    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
+    // 👈 补上 getSupplier 和 setSupplier，解决你之前的红字报错
+    public String getSupplier() { return supplier; }
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+        this.supplierName = supplier;
+    }
+
+    public String getSupplierName() {
+        // 👈 智能判断：优先读 supplierName，没有就读 supplier，再没有就给默认值
+        if (supplierName != null && !supplierName.isEmpty()) return supplierName;
+        if (supplier != null && !supplier.isEmpty()) return supplier;
+        return "Local Provider";
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+        this.supplier = supplierName;
+    }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }

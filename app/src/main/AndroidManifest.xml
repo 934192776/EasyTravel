@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 权限必须放在 <application> 外面 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,52 +18,52 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyTravel">
 
-        <!-- ===== 启动页 ===== -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+    <!-- ===== 启动页 ===== -->
+    <activity
+        android:name=".MainActivity"
+        android:exported="true"
+        android:windowSoftInputMode="adjustResize">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
 
-        <!-- ===== 首页 ===== -->
-        <activity android:name=".HomeActivity" android:exported="false" />
+    <!-- ===== 首页 ===== -->
+    <activity android:name=".HomeActivity" android:exported="true" />
 
-        <!-- ===== 登录/注册 ===== -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".RegisterActivity" android:exported="false" />
+    <!-- ===== 登录/注册 ===== -->
+    <activity android:name=".LoginActivity" android:exported="false" />
+    <activity android:name=".RegisterActivity" android:exported="false" />
 
-        <!-- ===== 分类详情页 ===== -->
-        <activity android:name=".CitySearchActivity" android:exported="false" />
-        <activity android:name=".AdventureSearchActivity" android:exported="false" />
-        <activity android:name=".FoodSearchActivity" android:exported="false" />
-        <activity android:name=".NatureSearchActivity" android:exported="false" />
+    <!-- ===== 分类详情页 ===== -->
+    <activity android:name=".CitySearchActivity" android:exported="false" />
+    <activity android:name=".AdventureSearchActivity" android:exported="false" />
+    <activity android:name=".FoodSearchActivity" android:exported="false" />
+    <activity android:name=".NatureSearchActivity" android:exported="false" />
 
-        <!-- ===== Deal 详情页 ===== -->
-        <activity android:name=".DealDetailActivity" android:exported="false" />
+    <!-- ===== Deal 详情页 ===== -->
+    <activity android:name=".DealDetailActivity" android:exported="false" />
 
-        <!-- ===== Customer 页面 ===== -->
-        <activity android:name=".MyBookingsActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
+    <!-- ===== Customer 页面 ===== -->
+    <activity android:name=".MyBookingsActivity" android:exported="false" />
+    <activity android:name=".ProfileActivity" android:exported="false" />
 
-        <!-- ===== Supplier 页面 ===== -->
-        <activity android:name=".AddDealActivity" android:exported="false" />
-        <activity android:name=".SupplierDealsActivity" android:exported="false" />
-        <activity android:name=".SupplierEarningsActivity" android:exported="false" />
+    <!-- ===== Supplier 页面 ===== -->
+    <activity android:name=".AddDealActivity" android:exported="false" />
+    <activity android:name=".SupplierDealsActivity" android:exported="false" />
+    <activity android:name=".SupplierEarningsActivity" android:exported="false" />
 
-        <!-- ===== Admin 页面 ===== -->
-        <activity android:name=".ManageUsersActivity" android:exported="false" />
-        <activity android:name=".ApproveDealsActivity" android:exported="false" />
-        <activity android:name=".AdminReportsActivity" android:exported="false" />
+    <!-- ===== Admin 页面 ===== -->
+    <activity android:name=".ManageUsersActivity" android:exported="false" />
+    <activity android:name=".ApproveDealsActivity" android:exported="false" />
+    <activity android:name=".AdminReportsActivity" android:exported="false" />
 
-        <!-- ===== Dashboard ===== -->
-        <activity android:name=".CustomerDashboardActivity" android:exported="false" />
-        <activity android:name=".SupplierDashboardActivity" android:exported="false" />
-        <activity android:name=".AdminDashboardActivity" android:exported="false" />
+    <!-- ===== Dashboard ===== -->
+    <activity android:name=".CustomerDashboardActivity" android:exported="false" />
+    <activity android:name=".SupplierDashboardActivity" android:exported="false" />
+    <activity android:name=".AdminDashboardActivity" android:exported="false" />
 
-    </application>
+</application>
 
-</manifest>
+    </manifest>

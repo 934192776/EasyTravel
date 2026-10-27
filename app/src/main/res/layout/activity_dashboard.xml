@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -18,19 +17,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dashboard"
+            android:text="Customer"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#1A237E" />
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Logout"
-            android:backgroundTint="#F44336"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp" />
+            android:textColor="#1A237E"
+            android:gravity="center" />
     </LinearLayout>
 
     <!-- ====== 欢迎信息 ====== -->
@@ -74,14 +65,45 @@
         android:textSize="16sp"
         android:layout_marginBottom="24dp" />
 
-    <!-- ====== 返回首页 ====== -->
-    <Button
-        android:id="@+id/btnGoHome"
+    <!-- ====== 弹性空间（把底部的按钮推到屏幕最下方） ====== -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Back to Home"
-        android:backgroundTint="#9C27B0"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- ====== 底部按钮区域：左边箭头，右边Logout ====== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- 返回箭头 (去掉了背景色，看起来就像个箭头) -->
+        <Button
+            android:id="@+id/btnGoHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="← Back"
+            android:backgroundTint="@android:color/transparent"
+            android:textColor="#9C27B0"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- 中间的弹簧，把左右两边推开 -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- 退出登录按钮 (红色) -->
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:backgroundTint="#F44336"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+    </LinearLayout>
 
 </LinearLayout>

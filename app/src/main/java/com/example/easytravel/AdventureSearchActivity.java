@@ -4,13 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,33 +36,18 @@ public class AdventureSearchActivity extends AppCompatActivity {
 
         loadAdventureDeals();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(v -> finish());
 
         etSearchAdventure.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDeals(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { filterDeals(s.toString()); }
+            @Override public void afterTextChanged(Editable s) {}
         });
 
-        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Deal deal) {
-                Intent intent = new Intent(AdventureSearchActivity.this, DealDetailActivity.class);
-                intent.putExtra("deal_data", deal);
-                startActivity(intent);
-            }
+        dealAdapter.setOnItemClickListener(deal -> {
+            Intent intent = new Intent(AdventureSearchActivity.this, DealDetailActivity.class);
+            intent.putExtra("deal_data", deal);
+            startActivity(intent);
         });
     }
 
@@ -74,24 +57,17 @@ public class AdventureSearchActivity extends AppCompatActivity {
             filteredDeals.addAll(adventureDeals);
         } else {
             for (Deal deal : adventureDeals) {
-                if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                        deal.getDescription().toLowerCase().contains(query.toLowerCase())) {
-                    filteredDeals.add(deal);
-                }
+                if (deal.getTitle().toLowerCase().contains(query.toLowerCase())) filteredDeals.add(deal);
             }
         }
         dealAdapter.setDeals(filteredDeals);
     }
 
     private void loadAdventureDeals() {
-        // 注意：这里我帮你加上了 subCategory 和 supplierId 以匹配 Deal 的构造方法
-        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "Activity", "79.00", "", "S01", "Auckland Sailing Co", "Auckland Harbour", 4.5, true));
-
-        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "Activity", "199.00", "", "S02", "Adventure NZ", "Auckland Harbour", 4.8, true));
-
-        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "Activity", "299.00", "", "S03", "Skydive Auckland", "Auckland", 5.0, true));
-
-        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "Activity", "129.00", "", "S04", "Harbour Jet", "Auckland Harbour", 4.6, true));
+        adventureDeals.add(new Deal("1", "Auckland Harbour Sailing", "2-hour sailing trip on Auckland Harbour.", "Adventure", "79.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793065190/klxvgl9bkpvcqannqflt.webp", "Auckland Sailing Co", "Auckland Harbour", true, "Activity"));
+        adventureDeals.add(new Deal("2", "Auckland Bridge Bungee Jump", "Jump off the iconic Auckland Harbour Bridge.", "Adventure", "199.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793065189/wicyi47mx4pptwdojogp.jpg", "Adventure NZ", "Auckland Harbour", true, "Activity"));
+        adventureDeals.add(new Deal("3", "Skydiving Over Auckland", "Experience the thrill of skydiving with ocean views.", "Adventure", "299.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793065187/kpuvos0dimjp6f06jo0m.jpg", "Skydive Auckland", "Auckland", true, "Activity"));
+        adventureDeals.add(new Deal("4", "Jet Boat Adventure", "High-speed jet boat ride on Auckland Harbour.", "Adventure", "129.00", "https://res.cloudinary.com/e32aflao/image/upload/v1793066519/an8zx1ee3rsuqfvodgli.jpg", "Harbour Jet", "Auckland Harbour", true, "Activity"));
 
         filteredDeals.addAll(adventureDeals);
         dealAdapter.setDeals(filteredDeals);

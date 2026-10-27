@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ public class FoodSearchActivity extends AppCompatActivity {
     private DealAdapter dealAdapter;
     private List<Deal> foodDeals = new ArrayList<>();
     private List<Deal> filteredDeals = new ArrayList<>();
-
     private TextView btnBack;
     private EditText etSearchFood;
 
@@ -30,7 +28,7 @@ public class FoodSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_food_search);
 
         recyclerView = findViewById(R.id.recyclerViewFood);
-        btnBack = findViewById(R.id.btnBack); // 现在类型匹配了，不会闪退了
+        btnBack = findViewById(R.id.btnBack);
         etSearchFood = findViewById(R.id.etSearchFood);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -39,33 +37,18 @@ public class FoodSearchActivity extends AppCompatActivity {
 
         loadFoodDeals();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(v -> finish());
 
         etSearchFood.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDeals(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { filterDeals(s.toString()); }
+            @Override public void afterTextChanged(Editable s) {}
         });
 
-        dealAdapter.setOnItemClickListener(new DealAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Deal deal) {
-                Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
-                intent.putExtra("deal_data", deal);
-                startActivity(intent);
-            }
+        dealAdapter.setOnItemClickListener(deal -> {
+            Intent intent = new Intent(FoodSearchActivity.this, DealDetailActivity.class);
+            intent.putExtra("deal_data", deal);
+            startActivity(intent);
         });
     }
 
@@ -75,20 +58,18 @@ public class FoodSearchActivity extends AppCompatActivity {
             filteredDeals.addAll(foodDeals);
         } else {
             for (Deal deal : foodDeals) {
-                if (deal.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                        deal.getDescription().toLowerCase().contains(query.toLowerCase())) {
-                    filteredDeals.add(deal);
-                }
+                if (deal.getTitle().toLowerCase().contains(query.toLowerCase())) filteredDeals.add(deal);
             }
         }
         dealAdapter.setDeals(filteredDeals);
     }
 
     private void loadFoodDeals() {
-        foodDeals.add(new Deal("1", "Auckland Fish Market Tour", "Taste fresh seafood.", "Food", "Seafood", "89.00", "", "S01", "Auckland Food Tours", "Auckland CBD", 4.8, true));
-        foodDeals.add(new Deal("2", "Classic Kiwi Food Tour", "Try NZ's iconic lamb roast.", "Food", "Classic Kiwi", "129.00", "", "S02", "Kiwi Food Adventures", "Auckland CBD", 4.9, true));
-        foodDeals.add(new Deal("3", "Auckland Food Walk", "Explore Asian fusion street food.", "Food", "Asian Fusion", "99.00", "", "S03", "Auckland Food Walk", "Auckland CBD", 4.6, true));
-        foodDeals.add(new Deal("4", "Noodle Making Class", "Learn to make authentic noodles.", "Food", "Cooking", "75.00", "", "S04", "Asian Cooking School", "Auckland CBD", 4.7, true));
+        // 👇 填入了稳定的网络图
+        foodDeals.add(new Deal("1", "Auckland Fish Market Tour", "Taste fresh seafood.", "Food", "89.00", "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500", "Auckland Food Tours", "Auckland CBD", true, "Tour"));
+        foodDeals.add(new Deal("2", "Classic Kiwi Food Tour", "Try NZ's iconic lamb roast.", "Food", "129.00", "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500", "Kiwi Food Adventures", "Auckland CBD", true, "Tour"));
+        foodDeals.add(new Deal("3", "Auckland Food Walk", "Explore Asian fusion street food.", "Food", "99.00", "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500", "Auckland Food Walk", "Auckland CBD", true, "Tour"));
+        foodDeals.add(new Deal("4", "Noodle Making Class", "Learn to make authentic noodles.", "Food", "75.00", "https://images.unsplash.com/photo-1552611052-33e04de081de?w=500", "Asian Cooking School", "Auckland CBD", true, "Class"));
 
         filteredDeals.addAll(foodDeals);
         dealAdapter.setDeals(filteredDeals);
